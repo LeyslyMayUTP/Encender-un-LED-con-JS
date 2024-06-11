@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Encender LED con ESP32</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script>
+        const ledButton = document.getElementById("ledButton");
+        const ledStatus = document.getElementById("ledStatus");
+        
+        const socket = new WebSocket("broker.emqx.io"); // Reemplaza con la dirección IP de tu ESP32
+        
+        socket.onopen = function(event) {
+            ledButton.addEventListener("click", function() {
+                if (socket.readyState === WebSocket.OPEN) {
+                    socket.send("LED_ON");
+                    ledStatus.innerHTML = "Encendido";
+                }
+            });
+        
+            socket.onmessage = function(event) {
+                if (event.data === "LED_ON") {
+                    ledStatus.innerHTML = "Encendido";
+                } else if (event.data === "LED_OFF") {
+                    ledStatus.innerHTML = "Apagado";
+                }
+            };
+        };
+        </script>
+
+    <style>
+button {
+	font-size: 24px;
+	padding: 12px 24px;
+	background-color: #4CAF50;
+	color: white;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+}
+</style>
+</head>
+<body>
+	<h1>Encender LED con ESP32</h1>
+	<button id="ledButton">Encender LED</button>
+	<p>Estado del LED: <span id="ledStatus">Apagado</span></p>
+</body>
+</html>
